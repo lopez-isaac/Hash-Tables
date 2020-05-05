@@ -8,6 +8,9 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+    def __repr__(self):
+        return (f"('{self.key}','{self.value}')")
+
 
 class HashTable:
     """
@@ -55,9 +58,24 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.storage[index] = value
-
-
+        current = self.storage[index]
+        # if not empty fix collision
+        if self.storage[index] is not None:
+            while current is not None:
+                #overwrite
+                if current.key == key:
+                    current.value = value
+                    break
+                #go to next node
+                elif current.next is not None:
+                    current = current.next
+                #if end is reach break out of loop
+                else:
+                    break
+            current.next = HashTableEntry(key, value)
+        # add new tail node
+        else:
+            self.storage[index] = HashTableEntry(key, value)
 
     def delete(self, key):
         """
@@ -66,9 +84,19 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        if self.storage[index] is None:
+        current = self.storage[index]
+        #special case if cell is empty
+        if current is None:
             print('Key not found')
-        self.storage[index] = None
+        #search for key until found
+        while current.key is not key:
+            #if key doesnt exist
+            if current == None:
+                print('Key not found')
+                break
+            current = current.next
+        #once found repace value with none
+        current.value = None
 
     def get(self, key):
         """
@@ -77,10 +105,21 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        if self.storage[index] is None:
+        current = self.storage[index]
+
+        #if index is valid search for value
+        if self.storage[index] is not None:
+            #search for the key
+            while current is not None:
+                if current.key == key:
+                    return current.value
+                else:
+                    current = current.next
+            #if not not found return none
             return None
+        #if invalid index return none
         else:
-            return self.storage[index]
+            return None
 
     def resize(self):
         """
@@ -95,18 +134,18 @@ class HashTable:
         #     self.put(index, value)
 
 if __name__ == "__main__":
-    ht = HashTable(2)
+    ht = HashTable(10)
 
     ht.put("line_1", "Tiny hash table")
-    ht.put("line_2", "Filled beyond capacity")
-    ht.put("line_3", "Linked list saves the day!")
+    ht.put("line_1", "Filled beyond capacity")
+    ht.put("line_2", "Linked list saves the day!")
 
     print("")
 
     # Test storing beyond capacity
     print(ht.get("line_1"))
+    print(ht.get("line_1"))
     print(ht.get("line_2"))
-    print(ht.get("line_3"))
 
     # Test resizing
     old_capacity = len(ht.storage)
@@ -117,7 +156,7 @@ if __name__ == "__main__":
 
     # Test if data intact after resizing
     print(ht.get("line_1"))
+    print(ht.get("line_1"))
     print(ht.get("line_2"))
-    print(ht.get("line_3"))
 
     print("")
