@@ -57,25 +57,26 @@ class HashTable:
         Hash collisions should be handled with Linked List Chaining.
         Implement this.
         """
+        # find hash index:
         index = self.hash_index(key)
+        # variable to create new node:
+        new_node = HashTableEntry(key, value)
+        # current node will be the index location:
         current = self.storage[index]
-        # if not empty fix collision
-        if self.storage[index] is not None:
-            while current is not None:
-                #overwrite
-                if current.key == key:
-                    current.value = value
-                    break
-                #go to next node
-                elif current.next is not None:
-                    current = current.next
-                #if end is reach break out of loop
-                else:
-                    break
-            current.next = HashTableEntry(key, value)
-        # add new tail node
+        # check if something is at index, if there isn't, add the node:
+        if current is None:
+            self.storage[index] = new_node
         else:
-            self.storage[index] = HashTableEntry(key, value)
+            # as long as the next node is not None and not matching key:
+            while current.next is not None and current.key != key:
+                # keep moving
+                current = current.next
+                # if key is already there, override its value:
+            if current.key == key:
+                current.value = value
+                # otherwise, create a new node at the end:
+            else:
+                current.next = new_node
 
     def delete(self, key):
         """
